@@ -7,6 +7,8 @@
   <license>BSD</license>
 
   <author email="nily@dti.dk">Nicolai Anton Lynnerup</author>
+  <author email="kimn@dti.dk">Kim Lykke Nørregaard</author>
+  <author email="llfa@dti.dk">Lærke Fabricius</author>
   <author email="lars.berscheid@kit.edu">Lars Berscheid</author>
 
   <buildtool_depend>catkin</buildtool_depend>

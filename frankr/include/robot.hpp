@@ -1,3 +1,12 @@
+/* Copyright (c) 2020, Danish Technological Institute.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ * 
+ * Original author: Lars Berscheid <lars.berscheid@kit.edu>
+ */
+
 #pragma once
 
 #include <condition_variable>
