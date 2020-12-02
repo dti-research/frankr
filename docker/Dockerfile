@@ -78,7 +78,7 @@ RUN mkdir -p /home/workspace/
 WORKDIR /home/workspace
 
 # Create Catkin WS
-RUN mkdir -p catkin_ws/src/frankr 
+RUN mkdir -p catkin_ws/src/
 
 # Set environment variables
 ENV PYTHONPATH=$PYTHONPATH:/home/workspace/catkin_ws/devel/lib
@@ -87,7 +87,6 @@ ENV PYTHONPATH=$PYTHONPATH:/home/workspace/catkin_ws/devel/lib
 RUN echo "source /home/workspace/catkin_ws/devel/setup.bash" >> ~/.bashrc \
 	&& echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc \
 	&& /bin/bash -c "source ~/.bashrc"
-
 
 #############
 # libfranka #
@@ -133,3 +132,12 @@ RUN mkdir moveit_ws && cd moveit_ws \
 	&& catkin build \
 	&& echo "source /home/workspace/moveit_ws/devel/setup.bash" >> ~/.bashrc \
 	&& /bin/bash -c "source ~/.bashrc"
+
+##########
+# Frankr #
+##########
+
+RUN cd catkin_ws/src/ \
+    && git clone https://github.com/dti-research/frankr.git \
+    && cd .. \
+    && catkin_make
