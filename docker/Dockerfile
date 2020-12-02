@@ -1,7 +1,7 @@
 
 FROM ros:kinetic
 
-LABEL maintainer="Nicolai Anton Lynnerup nily@dti.dk Kim Lykke Nørregaard kimn@dti.dk"
+LABEL maintainer="Nicolai Anton Lynnerup nily@dti.dk & Kim Lykke Nørregaard kimn@dti.dk & Lærke Fabricius llfa@dti.dk"
 
 SHELL ["/bin/bash", "-c"]
 
@@ -15,15 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		mlocate \
 		nano \
 		gedit \ 
-		python3-empy \
-		python3-tk \
-		libglfw3 \
-		libglfw3-dev \
-		libvtk6.2 \
 		net-tools \
         python3-dev \
 	    python3-pip \
 	    python3-yaml \
+        python3-empy \
         wget \
 		build-essential \
 		libpoco-dev \
@@ -119,13 +115,13 @@ RUN cd catkin_ws \
 RUN mkdir moveit_ws && cd moveit_ws \
 	&& rosdep update && apt-get update \
 	&& apt-get dist-upgrade -y \
-	&& apt-get install -y \
-	python-rosdep \
-	python-wstool \
-	python-catkin-pkg \
-	python-catkin-tools \
+	&& apt-get update && apt-get install -y --no-install-recommends \
+	    python-rosdep \
+	    python-wstool \
+	    python-catkin-pkg \
+	    python-catkin-tools \
 	&& wstool init src \
-	&& wstool merge -t src https://raw.githubusercontent.com/dti-research/learning-shifting-for-grasping/bug/new-codebase/moveit.rosinstall \
+	&& wstool merge -t src https://raw.githubusercontent.com/dti-research/moveit/${ROS_DISTRO}-devel/moveit.rosinstall \
 	&& wstool update -t src \
  	&& rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
 	&& catkin config --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release \
@@ -140,4 +136,4 @@ RUN mkdir moveit_ws && cd moveit_ws \
 RUN cd catkin_ws/src/ \
     && git clone https://github.com/dti-research/frankr.git \
     && cd .. \
-    && catkin_make
+    && /bin/bash -c ". /opt/ros/${ROS_DISTRO}/setup.bash; catkin_make"
