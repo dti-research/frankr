@@ -4,6 +4,8 @@ Frankr is a high-level C++ and Python API for controlling the Franka Emika Panda
 
 ## Usage
 
+For manual build of the docker image see: [INSTALL.md](INSTALL.md)
+
 Pull the docker image:
 
 ```
@@ -21,7 +23,7 @@ docker run -it --rm --network=host --privileged \
 
 ## Acknowledgements
 
-Frankr is originally authored by [@pantor](https://github.com/pantor) from which this package is build.
+Frankr is originally authored by [@pantor](https://github.com/pantor) from which this standalone package is build.
 
 ## Versions
 
