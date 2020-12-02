@@ -14,7 +14,7 @@ Run the container:
 
 ```
 docker run -it --rm --network=host --privileged \
-    -v $(pwd):/home/workspace/ \
+    -v $(pwd):/home/workspace/test \
     -w /home/workspace/ \
     dtiresearch/frankr
 ```
