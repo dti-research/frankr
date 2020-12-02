@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(frankrVERSION 1.0.0 LANGUAGES CXX)
+project(frankr VERSION 1.0.0 LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -116,11 +116,11 @@ include_directories(include
 #)
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  sensor_msgs
-)
+#generate_messages(
+#  DEPENDENCIES
+#  std_msgs
+#  sensor_msgs
+#)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -157,9 +157,7 @@ catkin_package(
     roscpp
     message_runtime
     std_msgs
-    sensor_msgs
     geometry_msgs
-    interactive_markers
     franka_msgs
     moveit_core
     moveit_ros_planning
@@ -176,8 +174,8 @@ target_link_libraries(ros INTERFACE ${catkin_LIBRARIES})
 add_dependencies(ros ${catkin_EXPORTED_TARGETS})
 
 
-add_library(frankr src/frankr/robot.cpp src/frankr/gripper.cpp)
+add_library(frankr src/robot.cpp src/gripper.cpp)
 target_include_directories(frankr PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(frankr PUBLIC ${catkin_LIBRARIES} Franka::Franka Eigen3::Eigen)
-pybind11_add_module(cfrankr src/frankr/python.cpp)
+pybind11_add_module(cfrankr src/python.cpp)
 target_link_libraries(cfrankr PUBLIC frankr)

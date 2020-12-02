@@ -51,7 +51,6 @@ RUN apt-get update \
 ################
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		#ros-${ROS_DISTRO}-desktop-full \
 		ros-${ROS_DISTRO}-joint-state-controller \
 		ros-${ROS_DISTRO}-joint-trajectory-controller \
 		ros-${ROS_DISTRO}-effort-controllers \

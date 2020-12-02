@@ -1,4 +1,4 @@
-#include <frankr/gripper.hpp>
+#include <gripper.hpp>
 
 
 Gripper::Gripper(const std::string& fci_ip): franka::Gripper(fci_ip), fci_ip(fci_ip) { }

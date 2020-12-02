@@ -1,4 +1,4 @@
-#include <frankr/robot.hpp>
+#include <robot.hpp>
 
 
 Robot::Robot(const std::string &name): moveit::planning_interface::MoveGroupInterface(name) {
@@ -61,7 +61,7 @@ int Robot::restartMoveIt() {
 bool Robot::recoverFromErrors() {
   ac.waitForServer();
 
-  franka_control::ErrorRecoveryGoal goal;
+  franka_msgs::ErrorRecoveryGoal goal;
   ac.sendGoal(goal);
 
   bool success = ac.waitForResult(ros::Duration(5.0));

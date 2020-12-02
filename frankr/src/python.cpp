@@ -3,8 +3,8 @@
 #include <pybind11/eigen.h>
 #include <pybind11/operators.h>
 
-#include <frankr/gripper.hpp>
-#include <frankr/robot.hpp>
+#include <gripper.hpp>
+#include <robot.hpp>
 
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
