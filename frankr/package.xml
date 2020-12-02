@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>frankr</name>
+  <version>1.0.0</version>
+  <description>ROS package for high level Python API for the Franka Emika Panda Robot</description>
+  <maintainer email="nily@dti.dk">Nicolai Anton Lynnerup</maintainer>
+  <license>BSD</license>
+
+  <author email="nily@dti.dk">Nicolai Anton Lynnerup</author>
+  <author email="lars.berscheid@kit.edu">Lars Berscheid</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>franka_msgs</build_depend>
+  <build_depend>panda_moveit_config</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>moveit_ros_planning</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>message_runtime</build_export_depend>
+
+  <depend>actionlib_msgs</depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>franka_msgs</exec_depend>
+  <exec_depend>panda_moveit_config</exec_depend>
+  <exec_depend>moveit_core</exec_depend>
+  <exec_depend>moveit_ros_planning</exec_depend>
+  <exec_depend>moveit_ros_planning_interface</exec_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
