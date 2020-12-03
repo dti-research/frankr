@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from cfrankr import Robot, Gripper, Affine, MotionData
 
 if __name__ == '__main__':
+    parser = ArgumentParser()
     parser.add_argument('--host', default='panda_arm', help='name of the robot')
     args = parser.parse_args()
 
