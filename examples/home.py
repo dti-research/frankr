@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from cfrankr import Robot, Gripper, Affine, MotionData
+from cfrankr import Robot, MotionData
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # Setup Robot
     general_dynamics_rel = 0.32
     robot = Robot(args.host, general_dynamics_rel)
-    robot.recover_from_errors()
+    #robot.recover_from_errors()
 
     # Move down
     md_home = MotionData().with_dynamics(0.3)
