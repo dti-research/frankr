@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	    python3-pip \
 	    python3-yaml \
         python3-empy \
+		python3-setuptools \
         wget \
 		build-essential \
 		libpoco-dev \
@@ -31,7 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		&& updatedb \
 		&& apt-get remove "*libfranka*"
 
-RUN pip3 install "pybind11[global]" --upgrade pip
+RUN pip3 install "pybind11[global]"
+RUN pip3 install wheel
 
 ################
 # CMake 3.18.4 #

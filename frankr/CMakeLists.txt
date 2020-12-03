@@ -168,12 +168,6 @@ catkin_package(
 ## Build ##
 ###########
 
-add_library(ros INTERFACE)
-target_include_directories(ros INTERFACE ${catkin_INCLUDE_DIRS})
-target_link_libraries(ros INTERFACE ${catkin_LIBRARIES})
-add_dependencies(ros ${catkin_EXPORTED_TARGETS})
-
-
 add_library(frankr src/robot.cpp src/gripper.cpp)
 target_include_directories(frankr PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(frankr PUBLIC ${catkin_LIBRARIES} Franka::Franka Eigen3::Eigen)
