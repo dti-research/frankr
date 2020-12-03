@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "/opt/ros/kinetic/include",
                 "/home/workspace/catkin_ws/devel/include",
-                "/usr/local/include/eigen3"
+                "/usr/local/include/eigen3",
+                "/home/workspace/libfranka/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
