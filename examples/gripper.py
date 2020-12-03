@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # Homing
     gripper.homing()
 
-    print("Gripper max width: " + gripper.max_width + " [m]")
+    print("Gripper max width: " + str(gripper.max_width) + " [m]")
 
     # Clamp
     gripper.clamp()
