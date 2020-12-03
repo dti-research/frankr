@@ -1,5 +1,5 @@
 {
-    "name": "catkin-workspace",
+    "name": "dtiresearch/frankr",
     "remoteUser": "root",
     "context": "../",
     "dockerFile": "../docker/Dockerfile",
