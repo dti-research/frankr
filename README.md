@@ -1,9 +1,9 @@
 <div align="center">
-  <div style="float: left; width: 50%; padding: 5px;">
+  <div style="float: left; width: 45%; padding: 5px;">
     <img width="340" src="https://raw.githubusercontent.com/dti-research/frankr/master/resources/franka_emika_logo.png">
   </div>
-  <div style="float: left; width: 50%; padding: 5px;">
-    <img width="340" src="https://raw.githubusercontent.com/dti-research/frankr/master/resources/ros_logo.png">
+  <div style="float: left; width: 45%; padding: 5px;">
+    <img width="250" src="https://raw.githubusercontent.com/dti-research/frankr/master/resources/ros_logo.png">
   </div>
   <h3 align="center">
     Franka R - High-Level Motion Library for the Franka Panda Robot Using ROS
