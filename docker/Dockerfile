@@ -5,6 +5,10 @@ LABEL maintainer="Nicolai Anton Lynnerup nily@dti.dk & Kim Lykke Nørregaard kim
 
 SHELL ["/bin/bash", "-c"]
 
+# Setup .bashrc
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc \
+	&& /bin/bash -c "source ~/.bashrc"
+
 ################
 # Dependencies #
 ################
@@ -47,6 +51,7 @@ RUN apt-get update \
 ################
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+		ros-${ROS_DISTRO}-moveit \
 		ros-${ROS_DISTRO}-joint-state-controller \
 		ros-${ROS_DISTRO}-joint-trajectory-controller \
 		ros-${ROS_DISTRO}-effort-controllers \
@@ -79,11 +84,6 @@ RUN mkdir -p catkin_ws/src/
 # Set environment variables
 ENV PYTHONPATH=$PYTHONPATH:/home/workspace/catkin_ws/devel/lib
 
-# Setup .bashrc
-RUN echo "source /home/workspace/catkin_ws/devel/setup.bash" >> ~/.bashrc \
-	&& echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc \
-	&& /bin/bash -c "source ~/.bashrc"
-
 #############
 # libfranka #
 #############
@@ -112,22 +112,8 @@ RUN cd catkin_ws \
 # MoveIt #
 ##########
 
-RUN mkdir moveit_ws && cd moveit_ws \
-	&& rosdep update && apt-get update \
-	&& apt-get dist-upgrade -y \
-	&& apt-get update && apt-get install -y --no-install-recommends \
-	    python-rosdep \
-	    python-wstool \
-	    python-catkin-pkg \
-	    python-catkin-tools \
-	&& wstool init src \
-	&& wstool merge -t src https://raw.githubusercontent.com/dti-research/moveit/${ROS_DISTRO}-devel/moveit.rosinstall \
-	&& wstool update -t src \
- 	&& rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
-	&& catkin config --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release \
-	&& catkin build \
-	&& echo "source /home/workspace/moveit_ws/devel/setup.bash" >> ~/.bashrc \
-	&& /bin/bash -c "source ~/.bashrc"
+RUN wget -q --show-progress --progress=bar:force https://raw.githubusercontent.com/dti-research/panda_moveit_config/kinetic-devel/config/panda_arm.xacro \
+	&& cp panda_arm.xacro /opt/ros/${ROS_DISTRO}/share/panda_moveit_config/config/
 
 ##########
 # Frankr #
@@ -136,4 +122,6 @@ RUN mkdir moveit_ws && cd moveit_ws \
 RUN cd catkin_ws/src/ \
     && git clone https://github.com/dti-research/frankr.git \
     && cd .. \
-    && /bin/bash -c ". /opt/ros/${ROS_DISTRO}/setup.bash; catkin_make"
+    && /bin/bash -c ". /opt/ros/${ROS_DISTRO}/setup.bash; catkin_make" \
+	&& echo "source /home/workspace/catkin_ws/devel/setup.bash" >> ~/.bashrc \
+	&& /bin/bash -c "source ~/.bashrc"
