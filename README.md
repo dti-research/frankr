@@ -1,4 +1,4 @@
-<div align="center">
+<div>
   <div style="float: left; width: 45%; padding: 5px;">
     <img width="340" src="https://raw.githubusercontent.com/dti-research/frankr/master/resources/franka_emika_logo.png">
   </div>
