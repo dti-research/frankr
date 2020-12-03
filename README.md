@@ -1,4 +1,14 @@
-# Franka ROS (frankr)
+<div align="center">
+  <div style="float: left; width: 50%; padding: 5px;">
+    <img width="340" src="https://raw.githubusercontent.com/dtiresearch/frankr/master/resources/franka_emika_logo.png">
+  </div>
+  <div style="float: left; width: 50%; padding: 5px;">
+    <img width="340" src="https://raw.githubusercontent.com/dtiresearch/frankr/master/resources/ros_logo.png">
+  </div>
+  <h3 align="center">
+    Franka R - High-Level Motion Library for the Franka Panda Robot Using ROS
+  </h3>
+</div>
 
 Frankr is a high-level C++ and Python API for controlling the Franka Emika Panda Robot through ROS. We are using our own fork of MoveIt and the `panda_moveit_config` package to control the robot as the default kinetic-devel branch in `panda_moveit_config` contains wrong information about collisions for the robot. Therefore we're building all packages from source, see the [Dockerfile](docker/Dockerfile) for more details on the installation. 
 
