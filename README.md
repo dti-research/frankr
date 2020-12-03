@@ -31,6 +31,23 @@ docker run -it --rm --network=host --privileged \
     dtiresearch/frankr
 ```
 
+## Running the Examples
+
+Open two more terminals and connect them to the running Docker container by `docker exec -it ... bash`. Then launch the following launch files in these terminals 
+
+```
+roslaunch franka_control franka_control robot_ip:=172.16.0.2
+roslaunch panda_moveit_config panda_moveit.launch
+```
+
+Now you're ready to test out the examples on your system. Always have a user ready at the emergency stop when moving the (any) robot! Simply run:
+
+```
+python3 examples/gripper.py --host 172.16.0.2
+...
+python3 examples/home.py
+```
+
 ## Acknowledgements
 
 Frankr is originally authored by Lars Berscheid from KIT [@pantor](https://github.com/pantor) from which this standalone package is build.
