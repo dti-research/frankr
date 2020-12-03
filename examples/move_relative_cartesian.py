@@ -1,3 +1,5 @@
+import numpy as np
+
 from argparse import ArgumentParser
 
 from cfrankr import Robot, Gripper, Affine, MotionData
