@@ -70,7 +70,7 @@ class Robot: RosNode, moveit::planning_interface::MoveGroupInterface {
     return future.get();
   }
 
-  actionlib::SimpleActionClient<franka_msgs::ErrorRecoveryAction> ac{"franka_msgs/error_recovery", true};
+  actionlib::SimpleActionClient<franka_msgs::ErrorRecoveryAction> ac{"franka_control/error_recovery", true};
 
   void stateCallback(const franka_msgs::FrankaState& msg);
   void wrenchCallback(const geometry_msgs::WrenchStamped& msg);
