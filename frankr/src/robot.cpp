@@ -139,7 +139,7 @@ bool Robot::moveWaypointsPtp(const Affine& frame, const std::vector<Waypoint>& w
 
   bool execution_success {false};
   for (auto affine: affines) {
-    this->setPoseTarget(affine);
+    this->setPoseTarget(Affine(affine).toPose());
 
     if (this->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
       this->stop();
