@@ -23,10 +23,22 @@ Robot::Robot(const std::string &name, double dynamic_rel): Robot(name) {
 }
 
 void Robot::stateCallback(const franka_msgs::FrankaState& msg) {
-  if (msg.current_errors.cartesian_reflex) {
-    has_reflex_error = true;
-    ROS_INFO_THROTTLE(1.0, "Cartesian reflex error!");
+  if (   this->robot_mode == franka_msgs::FrankaState::ROBOT_MODE_USER_STOPPED
+      && msg.robot_mode != franka_msgs::FrankaState::ROBOT_MODE_USER_STOPPED
+      && msg.robot_mode != franka_msgs::FrankaState::ROBOT_MODE_AUTOMATIC_ERROR_RECOVERY) {
+      this->recoverFromErrors(); //libfranka control thread reset
   }
+
+  if (   this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_USER_STOPPED
+      && msg.robot_mode == franka_msgs::FrankaState::ROBOT_MODE_USER_STOPPED) {
+      ROS_WARN("ROBOT_MODE_USER_STOPPED\r");
+  }
+  else if (   this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_REFLEX
+      && msg.robot_mode == franka_msgs::FrankaState::ROBOT_MODE_REFLEX) {
+      ROS_WARN("ROBOT_MODE_REFLEX\r");
+  }
+
+  this->robot_mode = msg.robot_mode;
 }
 
 void Robot::wrenchCallback(const geometry_msgs::WrenchStamped& msg) {
@@ -54,7 +66,8 @@ void Robot::wrenchCallback(const geometry_msgs::WrenchStamped& msg) {
 }
 
 Affine Robot::currentPose(const Affine& frame) {
-  return restartMoveItIfCommandFails([&]() { return Affine(this->getCurrentPose().pose) * frame.inverse(); }, 5); // [s]
+  //return restartMoveItIfCommandFails([&]() { return Affine(this->getCurrentPose().pose) * frame.inverse(); }, 5); // [s]
+  return Affine(this->getCurrentPose().pose) * frame.inverse();
 }
 
 int Robot::restartMoveIt() {
@@ -68,15 +81,16 @@ int Robot::restartMoveIt() {
 }
 
 bool Robot::recoverFromErrors() {
-  ac.waitForServer();
+  ROS_INFO("Invoke error recovery action!\r");
+  if (!ac.waitForServer(ros::Duration(5.0))) {
+    ROS_FATAL("Error recovery server not available!");
+    return false;
+  }
 
   franka_msgs::ErrorRecoveryGoal goal;
   ac.sendGoal(goal);
 
-  bool success = ac.waitForResult(ros::Duration(5.0));
-  if (success) {
-    has_reflex_error = false;
-  }
+  bool success = ac.waitForResult(ros::Duration(10.0)); //self-collision-resolve-movement can take a while
   return success;
 }
 
@@ -89,16 +103,21 @@ bool Robot::moveJoints(const std::array<double, 7>& joint_values, MotionData& da
   this->setJointValueTarget(joint_values_vector);
 
   bool execution_success = false;
-  if (this->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
-    this->is_moving = true;
-    auto execution = this->execute(my_plan);
-    this->is_moving = false;
-    execution_success = (execution == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-  } else {
-    ROS_FATAL_STREAM("Error in planning motion");
+  if (this->plan(my_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) {
+    ROS_FATAL("motion rejected - planning phase");
     return false;
   }
-
+  this->stop();
+  if (    this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_IDLE
+      &&  this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_MOVE) {
+    ROS_FATAL("motion rejected - invalid robot mode");
+    return false;  
+  }
+  this->is_moving = true;
+  auto execution = this->execute(my_plan);
+  this->is_moving = false;
+  execution_success = (execution == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  
   if (current_motion_data->break_callback && current_motion_data->did_break) {
     current_motion_data->break_callback();
   }
@@ -137,20 +156,24 @@ bool Robot::moveWaypointsPtp(const Affine& frame, const std::vector<Waypoint>& w
   this->setMaxVelocityScalingFactor(velocity_rel * data.velocity_rel);
   this->setMaxAccelerationScalingFactor(acceleration_rel * data.acceleration_rel);
 
-  bool execution_success {false};
+  bool execution_success = true;
   for (auto affine: affines) {
-    this->setPoseTarget(affine);
+    this->setPoseTarget(Affine(affine).toPose());
 
-    if (this->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
-      this->stop();
-      this->is_moving = true;
-      auto execution = this->execute(my_plan);
-      this->is_moving = false;
-      execution_success = (execution == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    } else {
-      ROS_FATAL_STREAM("Error in planning motion");
+    if (this->plan(my_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) {
+      ROS_FATAL("motion rejected - planning phase");
       return false;
     }
+    this->stop();
+    if (    this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_IDLE
+        &&  this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_MOVE) {
+      ROS_FATAL("motion rejected - invalid robot mode");
+      return false;  
+    }
+    this->is_moving = true;
+    auto execution = this->execute(my_plan);
+    this->is_moving = false;
+    execution_success = execution_success && (execution == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   }
 
   if (current_motion_data->break_callback && current_motion_data->did_break) {
@@ -194,9 +217,9 @@ bool Robot::moveWaypointsCartesian(const Affine& frame, const std::vector<Waypoi
   current_motion_data = std::make_shared<MotionData>(data);
 
   moveit_msgs::RobotTrajectory trajectory;
-  bool execution_success {false};
+  bool execution_success = false;
 
-  double fraction = restartMoveItIfCommandFails([&]() { return this->computeCartesianPath(poses, 0.005, 0.0, trajectory); }, 10); // [s]
+  double fraction = this->computeCartesianPath(poses, 0.005, 0.0, trajectory);
 
   if (fraction >= 0.0) {
     robot_trajectory::RobotTrajectory rt(this->getCurrentState()->getRobotModel(), this->getName());
@@ -210,25 +233,20 @@ bool Robot::moveWaypointsCartesian(const Affine& frame, const std::vector<Waypoi
 
     rt.getRobotTrajectoryMsg(trajectory);
     my_plan.trajectory_ = trajectory;
-
+    
     this->stop();
+    if (    this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_IDLE
+        &&  this->robot_mode != franka_msgs::FrankaState::ROBOT_MODE_MOVE) {
+      ROS_FATAL("motion rejected - invalid robot mode");
+      return false;  
+    }
+
     this->is_moving = true;
-
-    auto execution = restartMoveItIfCommandFails([&]() { return this->execute(my_plan); }, 15); // [s]
-
+    auto execution = this->execute(my_plan);
     this->is_moving = false;
     execution_success = (execution == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    if (!execution_success) {
-      recoverFromErrors();
-
-      this->is_moving = true;
-
-      execution = restartMoveItIfCommandFails([&]() { return this->execute(my_plan); }, 15); // [s]
-
-      this->is_moving = false;
-    }
   } else {
-    ROS_FATAL_STREAM("Error in planning motion");
+    ROS_FATAL("motion rejected - planning phase");
     return false;
   }
 
