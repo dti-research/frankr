@@ -70,15 +70,16 @@ class Robot: RosNode, moveit::planning_interface::MoveGroupInterface {
     return future.get();
   }
 
-  actionlib::SimpleActionClient<franka_msgs::ErrorRecoveryAction> ac{"franka_msgs/error_recovery", true};
-
+  actionlib::SimpleActionClient<franka_msgs::ErrorRecoveryAction> ac{"franka_control/error_recovery", true};
+  
   void stateCallback(const franka_msgs::FrankaState& msg);
   void wrenchCallback(const geometry_msgs::WrenchStamped& msg);
 
 public:
+  franka_msgs::FrankaState::_robot_mode_type robot_mode;
   // Break conditions
   bool is_moving {false};
-  bool has_reflex_error {false};
+  bool has_reflex_error {(this->robot_mode == franka_msgs::FrankaState::ROBOT_MODE_REFLEX)};
 
   double velocity_rel {1.0};
   double acceleration_rel {1.0};
